@@ -4,6 +4,42 @@
 
 ## Process
 
+### Step 0: ตรวจสอบสถานะโปรเจค
+
+ก่อนเริ่มสแกน ให้ตรวจสอบว่าโปรเจคมี source code จริงหรือยัง:
+
+1. ตรวจดูว่ามีไฟล์ source code ใน `apps/`, `libs/`, `src/` หรือ directory หลักหรือไม่
+2. ตรวจดูว่า `CLAUDE.md` ยังเป็น template (มี placeholder `{...}` อยู่) หรือกรอกข้อมูลจริงแล้ว
+
+**ถ้าโปรเจคยังไม่ได้ตั้งค่า / ยังไม่มี source code:**
+
+ใช้ AskUserQuestion ถามข้อมูลต่อไปนี้ทีละข้อจนครบ:
+
+1. **Programming Language:** ใช้ภาษาอะไร? (เช่น TypeScript, Python, Go, Java, Rust)
+2. **Framework:** ใช้ framework อะไร? (เช่น Next.js, FastAPI, Express, NestJS, Gin, Spring Boot)
+3. **ประเภทโปรเจค:** เป็นแบบไหน? (เช่น REST API, Full-stack web app, CLI tool, Monorepo)
+4. **Database:** ใช้ database อะไร? (เช่น PostgreSQL, MongoDB, SQLite, ไม่มี)
+5. **ORM / Query Builder:** ใช้อะไร? (เช่น Prisma, Drizzle, SQLAlchemy, TypeORM, ไม่มี)
+6. **Testing framework:** ใช้อะไร? (เช่น Vitest, Jest, Pytest, Go testing)
+7. **Pattern เพิ่มเติม:** มี pattern เฉพาะที่อยากได้ example ไหม? (เช่น Authentication, WebSocket, Background jobs, File upload)
+
+หลังได้ข้อมูลครบแล้ว:
+
+1. ใช้ WebSearch ค้นหา best practice examples สำหรับ stack ที่ user เลือก
+2. รวบรวม example patterns ที่เป็น best practice ของ stack นั้น เช่น:
+   - Project structure ที่แนะนำ
+   - API endpoint pattern (routing, validation, error handling)
+   - Service layer / business logic pattern
+   - Database / repository pattern
+   - Testing pattern (unit test, integration test)
+   - Authentication / authorization pattern
+   - Error handling pattern
+3. นำเสนอ example patterns ที่พบให้ user เลือกว่าต้องการสร้างตัวไหน
+4. สร้าง example files ใน `examples/` พร้อม annotations ตาม convention
+5. อัพเดท `examples/README.md` และ `CLAUDE.md` section "Examples Reference"
+
+**ถ้าโปรเจคมี source code แล้ว → ไปต่อ Step 1**
+
 ### Step 1: สแกน Codebase
 
 1. อ่าน `examples/README.md` เพื่อดู example ที่มีอยู่แล้ว

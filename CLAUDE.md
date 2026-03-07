@@ -56,7 +56,30 @@
 
 ## 4. Project Structure
 
+**โครงสร้างโปรเจคต้องยึดตาม `PROJECT_STRUCTURE.md` เป็นหลัก**
+
+### กฎสำคัญ
+
+- **อ่าน `PROJECT_STRUCTURE.md` ก่อนสร้างไฟล์/โฟลเดอร์ใหม่เสมอ** — สร้างตาม structure ที่กำหนดไว้เท่านั้น
+- **ห้ามสร้างไฟล์หรือโฟลเดอร์นอก structure ที่กำหนด** — ถ้าต้องการเพิ่ม directory ใหม่ที่ไม่มีใน `PROJECT_STRUCTURE.md` ต้องถาม user ก่อนและอัพเดท `PROJECT_STRUCTURE.md` ให้ตรงกัน
+- **ไฟล์ใหม่ต้องอยู่ใน directory ที่ถูกต้องตามหน้าที่** — เช่น route อยู่ใน routes/, service อยู่ใน services/
+
+### การจัดวาง PROJECT_STRUCTURE.md
+
+| โครงสร้างโปรเจค | ตำแหน่ง PROJECT_STRUCTURE.md | หมายเหตุ |
+|----------------|------------------------------|----------|
+| **Single app** | `PROJECT_STRUCTURE.md` ที่ root | ไฟล์เดียวครอบคลุมทั้งโปรเจค |
+| **Monorepo** | `apps/{app-name}/PROJECT_STRUCTURE.md` ต่อแต่ละ app | แต่ละ app มี structure เป็นของตัวเอง — ไม่ใช้ไฟล์ร่วมกัน เพื่อกันสับสน |
+
+**สำหรับ Monorepo:**
+- เมื่อทำงานกับ app ใด ให้ยึด `PROJECT_STRUCTURE.md` ของ app นั้นเท่านั้น
+- Root level อาจมี `PROJECT_STRUCTURE.md` สำหรับ shared structure (เช่น `libs/`, `infra/`) แยกต่างหาก
+- ห้ามอ้างอิง structure ข้าม app — แต่ละ app เป็นอิสระต่อกัน
+
+### ภาพรวมโครงสร้าง
+
 <!-- TODO: วาด tree structure ของโปรเจค — ปรับตามโครงสร้างจริง -->
+<!-- ต้องตรงกับ PROJECT_STRUCTURE.md — ถ้าแก้ที่นี่ต้องแก้ที่ PROJECT_STRUCTURE.md ด้วย -->
 
 ```
 {project-name}/
@@ -73,6 +96,8 @@
 │   └── {lib-3}/                 # {คำอธิบาย เช่น database client}
 ├── examples/                    # Reference implementations สำหรับ AI
 ├── infra/                       # Infrastructure as Code
+├── PROJECT_STRUCTURE.md         # Source of truth สำหรับโครงสร้างโปรเจค
+├── INITIAL.md                   # Initial project setup guide
 ├── {config-file}                # เช่น pyproject.toml / package.json
 └── CLAUDE.md                    # ไฟล์นี้
 ```
@@ -287,16 +312,36 @@ Settings โหลดผ่าน `{path-to-config}` — ใช้ {library/patt
 1. Constructor / `__init__`
 2. Lifecycle methods (เช่น `__aenter__`, `componentDidMount`)
 3. Abstract / interface methods
-4. Public methods
+4. **Public methods — ต้องอยู่ก่อน private เสมอ** เพื่อให้อ่าน API ของ class ได้ทันทีโดยไม่ต้อง scroll ผ่าน implementation details
 5. Private methods (`_` prefix / `#` private)
 
-### Documentation
+### Documentation & File Context
 
 <!-- TODO: ระบุ convention สำหรับ docstrings / comments -->
 
 - Docstrings/Comments เขียนเป็น {ภาษาไทย / ภาษาอังกฤษ}
 - Public functions ใหม่ทุกตัวต้องมี docstring
 - ใช้ {format เช่น Google style / JSDoc / GoDoc}
+
+#### Context Engineering — เขียน Context ไว้ในไฟล์
+
+ทุกไฟล์ที่สร้างใหม่ต้องมี **file header comment** อธิบาย context สั้น ๆ ที่หัวไฟล์ เพื่อให้ AI agent เข้าใจได้ทันทีโดยไม่ต้องอ่านทั้งไฟล์:
+
+```
+// ไฟล์นี้ทำอะไร: {คำอธิบายสั้น ๆ}
+// ใช้กับ: {module/feature ที่เกี่ยวข้อง}
+// ข้อควรระวัง: {gotcha สำคัญ ถ้ามี}
+```
+
+**หลักการ 3 ระดับ:**
+
+| ระดับ | วิธีให้ Context | ตัวอย่าง |
+|-------|----------------|----------|
+| **โปรเจค** | เขียนไว้ใน `CLAUDE.md`, `PROJECT_STRUCTURE.md` | ภาพรวม, กฎ, conventions |
+| **ไฟล์** | เขียน header comment ที่หัวไฟล์ | ไฟล์นี้ทำอะไร, ใช้กับอะไร, ข้อควรระวัง |
+| **Implementation** | ให้ agent อ่าน code จริง | รายละเอียด logic, ตรวจสอบว่า comment ยังตรงกับ code |
+
+**เหตุผล:** เขียน context ไว้ = ประหยัด token + ได้ทั้ง what/why/constraints ทันที ส่วนการอ่าน code จริง = ตรวจสอบความถูกต้อง เพราะ comment อาจ outdated แต่ code คือ truth
 
 ### Testing Conventions
 
